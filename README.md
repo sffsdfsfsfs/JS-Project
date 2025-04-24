@@ -1,6 +1,6 @@
-# Buget Tracker
+# Budget Tracker
 
-Buget Tracker is a buggy budget tracker where players need to identify and fix bugs in HTML, CSS, and JavaScript to come up with an optimal working application.
+Budget Tracker is a buggy budget tracker where players need to identify and fix bugs in HTML, CSS, and JavaScript to come up with an optimal working application.
 
 ## Scenario
 
