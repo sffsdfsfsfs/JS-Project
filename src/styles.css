@@ -115,7 +115,7 @@ header {
   width: 95%;
   max-width: 1200px;
   margin: 0 auto;
-  /* Bug #23: display should flex */
+  display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
@@ -287,7 +287,7 @@ select {
 
 .tab-content.active {
   display: block;
-  /* Bug #24: overflow-y should be set to auto */
+  overflow-y: auto;
   height: 370px;
 }
 

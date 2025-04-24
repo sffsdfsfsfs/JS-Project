@@ -32,14 +32,19 @@ function init() {
   updateCategoryDropdowns(categoryDropdowns);
   setupTabs();
 
+  // BUG #22 (Advanced): Not checking if chart already exists before creating a new one
+  // This will cause memory leaks and overlapping charts
   createChart(chartContainer);
 }
 
+// BUG #1 (Basic): LocalStorage key is misspelled in different functions
+// In this function it's "transaction" but elsewhere it's "transactions"
 function getTransactionsFromStorage() {
-  let transactions = localStorage.getItem("transaction");
+  let transactions = localStorage.getItem("transactions");
   return transactions ? JSON.parse(transactions) : [];
 }
 
+// Category Management
 let categories = JSON.parse(localStorage.getItem("categories")) || [
   "Food",
   "Transportation",
@@ -56,31 +61,55 @@ let transactions = getTransactionsFromStorage();
 function addTransaction(e, descriptionEl, amountEl, categoryEl, dateEl) {
   e.preventDefault();
 
+  // BUG #2 (Basic): Missing input validation
+  // Should check if description is not empty
+  if (descriptionEl.value.trim() === "") {
+    return;
+  }
+
+  // BUG #3 (Intermediate): parseFloat can result in NaN but there's no check
   const amount = parseFloat(amountEl.value);
+  if (isNaN(amount)) {
+    return;
+  }
 
   const description = descriptionEl.value;
   const category = categoryEl.value;
   const date = dateEl.value;
 
+  // BUG #4 (Basic): Missing transaction ID (will cause delete function to fail)
   const newTransaction = {
+    id: generateID(), // Should be unique
     description,
     amount,
     category,
     date,
   };
-
-  transaction.push(newTransaction);
+  // BUG #5 (Basic): This variable should be 'transactions' but is 'transaction'
+  // This will cause issues with the rest of the code that expects 'transactions'
+  transactions.push(newTransaction);
   updateLocalStorage();
+
+  descriptionEl.value = "";
+  amountEl.value = "";
+  categoryEl.value = categories[0].toLowerCase();
+  dateEl.valueAsDate = new Date();
+
+  // BUG #6 (Basic): Form isn't reset after submission
+
+  // init();
 }
 
 // Generate unique ID
+// BUG #7 (Intermediate): This function exists but is never used
 function generateID() {
   return Math.floor(Math.random() * 1000000);
 }
 
 // Update local storage
 function updateLocalStorage() {
-  localStorage.setItem("transactions", transactions);
+  // BUG #1 (Basic): Using different key than in getTransactionsFromStorage()
+  localStorage.setItem("transactions", JSON.stringify(transactions));
 }
 
 // Remove transaction
@@ -94,30 +123,36 @@ function removeTransaction(id) {
 function updateValues(balanceEl, incomeEl, expenseEl) {
   const amounts = transactions.map((transaction) => transaction.amount);
 
+  // BUG #8 (Intermediate): Using = instead of += for the reducer accumulator
   const total = amounts.reduce((acc, amount) => {
-    return (acc = amount);
+    return acc + amount;
   }, 0);
 
   const income = amounts
     .filter((amount) => amount > 0)
     .reduce((acc, amount) => acc + amount, 0);
 
+  // BUG #9 (Intermediate): Using - instead of + for the reducer accumulator
   const expense = amounts
     .filter((amount) => amount < 0)
-    .reduce((acc, amount) => acc - amount, 0);
+    .reduce((acc, amount) => acc + amount, 0);
 
-  balanceEl.textContent = `Rs ${total}`;
-  incomeEl.textContent = `+Rs ${income}`;
-  expenseEl.textContent = `-Rs ${Math.abs(expense)}`;
+  // BUG #10 (Basic): Not using toFixed consistently across all displayed values
+  balanceEl.textContent = `Rs ${total.toFixed(2)}`;
+  incomeEl.textContent = `+Rs ${income.toFixed(2)}`;
+  expenseEl.textContent = `-Rs ${Math.abs(expense).toFixed(2)}`;
 }
 
 // Add transactions to DOM
 function addTransactionDOM(transaction, transactionListEl) {
-  const sign = "-";
+  // BUG #11 (Basic): No '+' sign for positive values in the list
+  const sign = transaction.amount < 0 ? "-" : "+";
 
   const item = document.createElement("li");
 
-  item.className = transaction.category === "income" ? "expense" : "income";
+  // BUG #12 (Intermediate): className should be based on transaction amount
+  // but using just "income" or "expense" without checking the value
+  item.className = transaction.amount < 0 ? "expense" : "income";
 
   const detailsDiv = document.createElement("div");
   detailsDiv.className = "details";
@@ -155,14 +190,16 @@ function addTransactionDOM(transaction, transactionListEl) {
   // Don't change the following line
   transactionListEl.insertAdjacentHTML("beforeend", item.outerHTML);
 
-  // Don't change the following line
   deleteBtn = transactionListEl.lastElementChild.querySelector(".delete-btn");
+  // BUG #13 (Intermediate): should add deleteBtn.addEventListener("click", () => removeTransaction(transaction.id)); to delete transaction
+  deleteBtn.addEventListener("click", () => removeTransaction(transaction.id));
 }
 
 function createChart(chartContainer) {
   chartContainer.innerHTML = "";
 
-  if ((transactions.length = 0)) {
+  // BUG #14 (Intermediate): using = instead of ===
+  if (transactions.length === 0) {
     chartContainer.textContent = "No data to display";
     return;
   }
@@ -197,7 +234,8 @@ function createChart(chartContainer) {
   }
 
   // Find maximum amount for scaling
-  const maxAmount = Math.max(Object.values(categorySummary));
+  // BUG #15 (Intermediate): use spread operator
+  const maxAmount = Math.max(...Object.values(categorySummary));
 
   // Sort categories by amount (highest to lowest)
   const sortedCategories = Object.keys(categorySummary).sort(
@@ -218,7 +256,6 @@ function createChart(chartContainer) {
     yAxis.appendChild(tick);
   }
 
-  // Don't change the following line
   chartContainer.insertAdjacentHTML("beforeend", yAxis.outerHTML);
 
   // Create grid lines
@@ -231,7 +268,6 @@ function createChart(chartContainer) {
     gridLines.appendChild(line);
   }
 
-  // Don't change the following line
   chartContainer.insertAdjacentHTML("beforeend", gridLines.outerHTML);
 
   // Create bars for each category
@@ -259,10 +295,13 @@ function createChart(chartContainer) {
     label.className = "bar-label";
     label.textContent = category;
 
-    // Don't change the following line
+    // BUG #16 (Intermediate): append bars, labels to barGroup
+    barGroup.appendChild(bar);
+    barGroup.appendChild(label);
+
     chartContainer.insertAdjacentHTML("beforeend", barGroup.outerHTML);
 
-    init();
+    // Bug #25: Stackoverflow error
   });
 }
 
@@ -276,10 +315,12 @@ function generateReport() {
     .reduce((acc, t) => acc + t.amount, 0);
 
   const totalExpense = transactions
-    .filter((t) => t.amount > 0)
+    .filter((t) => t.amount < 0) // BUG #17 (Intermediate): This should be t.amount < 0
     .reduce((acc, t) => acc + t.amount, 0);
 
-  const balance = totalIncome - totalExpense;
+  // BUG #18 (Intermediate): Incorrect calculation - should be totalIncome + totalExpense
+  // since totalExpense is already negative
+  const balance = totalIncome + totalExpense;
 
   reportText += `Total Income: Rs ${totalIncome.toFixed(2)}\n`;
   reportText += `Total Expense: Rs ${Math.abs(totalExpense).toFixed(2)}\n`;
@@ -290,7 +331,11 @@ function generateReport() {
 
   const categorySummary = {};
 
+  // BUG #19 (Intermediate): Not checking if category exists before adding
   transactions.forEach((t) => {
+    if (!categorySummary[t.category] && t.amount < 0) {
+      categorySummary[t.category] = 0;
+    }
     if (t.amount < 0) {
       categorySummary[t.category] += Math.abs(t.amount);
     }
@@ -402,8 +447,9 @@ function deleteCategory(categoryName) {
     categories = categories.filter((cat) => cat !== categoryName);
 
     // Update transactions with this category to "Other" or first available category
+    //Bug #20 : unnecessary const keyword
     const defaultCategory = "Other";
-    const transactions = getTransactionsFromStorage();
+    transactions = getTransactionsFromStorage();
 
     transactions.forEach((transaction) => {
       if (transaction.category === categoryName) {
@@ -432,10 +478,11 @@ function updateCategoryDropdowns(categoryDropdowns) {
     dropdown.innerHTML = "";
 
     // Add all categories
+    //Bug #21 : unnecessary toLowerCase keyword
     categories.forEach((category) => {
       dropdown.insertAdjacentHTML(
         "beforeend",
-        `<option value="${category.toLowerCase()}">${category}</option>`
+        `<option value="${category}">${category}</option>`
       );
     });
 

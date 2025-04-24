@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buget Tracker</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Budget Tracker</title>
+    <link rel="stylesheet" href="fixedStyles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -14,7 +14,7 @@
   <body>
     <header>
       <div class="header-content">
-        <h1>Buget Tracker</h1>
+        <h1>Budget Tracker</h1>
         <button class="help-btn" id="helpBtn">?</button>
       </div>
       <div class="help-content" id="helpContent">
@@ -143,6 +143,8 @@
             <div class="tabs">
               <button class="tab-btn active"
                 data-tab="transactions">Transactions</button>
+              <button class="tab-btn"
+                data-tab="goals">Goals</button>
             </div>
 
             <div class="tab-content active" id="transactions-tab">
@@ -186,6 +188,10 @@
       </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="fixedScript.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="module" src="utilities/generateReport.js"></script>
+    <script src="utilities/setGoalsScript.js"></script>
   </body>
 </html>
