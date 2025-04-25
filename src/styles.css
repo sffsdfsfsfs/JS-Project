@@ -287,8 +287,8 @@ select {
 
 .tab-content.active {
   display: block;
-  /* Bug #24: overflow-y should be set to auto */
   height: 370px;
+  overflow-y: auto;
 }
 
 /* Transaction List */
@@ -703,4 +703,14 @@ select {
   border: none;
   cursor: pointer;
   margin-right: 10px;
+}
+
+@media (min-width: 1080px) {
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 95%;
+    max-width: 1400px;
+  }
 }

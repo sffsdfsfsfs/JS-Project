@@ -1,3 +1,13 @@
+const LOCAL_STORAGE_KEY_TRANSACTIONS = "transactions";
+
+/**
+ * A utility function to format a money value to two decimal places.
+ * @param {number} value
+ */
+function formatMoney(value) {
+  return value.toFixed(2);
+}
+
 // Initialize app
 function init() {
   // DOM elements
@@ -36,7 +46,7 @@ function init() {
 }
 
 function getTransactionsFromStorage() {
-  let transactions = localStorage.getItem("transaction");
+  let transactions = localStorage.getItem(LOCAL_STORAGE_KEY_TRANSACTIONS);
   return transactions ? JSON.parse(transactions) : [];
 }
 
@@ -56,9 +66,23 @@ let transactions = getTransactionsFromStorage();
 function addTransaction(e, descriptionEl, amountEl, categoryEl, dateEl) {
   e.preventDefault();
 
-  const amount = parseFloat(amountEl.value);
-
   const description = descriptionEl.value;
+  if (!description) {
+    alert("You haven't entered a description");
+    return;
+  }
+  
+  if (!amountEl.value) {
+    alert("You haven't entered an amount")
+    return;
+  }
+  
+  const amount = parseFloat(amountEl.value);
+  if (Number.isNaN(amount)) {
+    alert("The amount you have entered is invalid")
+    return;
+  }
+
   const category = categoryEl.value;
   const date = dateEl.value;
 
@@ -68,8 +92,11 @@ function addTransaction(e, descriptionEl, amountEl, categoryEl, dateEl) {
     category,
     date,
   };
+  
+  descriptionEl.value = "";
+  amountEl.value = "";
 
-  transaction.push(newTransaction);
+  transactions.push(newTransaction);
   updateLocalStorage();
 }
 
@@ -80,7 +107,7 @@ function generateID() {
 
 // Update local storage
 function updateLocalStorage() {
-  localStorage.setItem("transactions", transactions);
+  localStorage.setItem(LOCAL_STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
 }
 
 // Remove transaction
@@ -106,18 +133,17 @@ function updateValues(balanceEl, incomeEl, expenseEl) {
     .filter((amount) => amount < 0)
     .reduce((acc, amount) => acc - amount, 0);
 
-  balanceEl.textContent = `Rs ${total}`;
-  incomeEl.textContent = `+Rs ${income}`;
-  expenseEl.textContent = `-Rs ${Math.abs(expense)}`;
+  balanceEl.textContent = `Rs ${formatMoney(total)}`;
+  incomeEl.textContent = `+Rs ${formatMoney(income)}`;
+  expenseEl.textContent = `-Rs ${formatMoney(Math.abs(expense))}`;
 }
 
 // Add transactions to DOM
 function addTransactionDOM(transaction, transactionListEl) {
-  const sign = "-";
-
   const item = document.createElement("li");
 
-  item.className = transaction.category === "income" ? "expense" : "income";
+  const sign = transaction.amount > 0 ? "+" : "-";
+  item.className = transaction.amount > 0 ? "income" : "expense";
 
   const detailsDiv = document.createElement("div");
   detailsDiv.className = "details";
@@ -140,9 +166,7 @@ function addTransactionDOM(transaction, transactionListEl) {
 
   const amountSpan = document.createElement("span");
   amountSpan.className = "amount";
-  amountSpan.textContent = `${sign}Rs ${Math.abs(transaction.amount).toFixed(
-    2
-  )}`;
+  amountSpan.textContent = `${sign}Rs ${formatMoney(Math.abs(transaction.amount))}`;
 
   let deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-btn";
@@ -162,7 +186,7 @@ function addTransactionDOM(transaction, transactionListEl) {
 function createChart(chartContainer) {
   chartContainer.innerHTML = "";
 
-  if ((transactions.length = 0)) {
+  if ((transactions.length == 0)) {
     chartContainer.textContent = "No data to display";
     return;
   }
@@ -262,7 +286,7 @@ function createChart(chartContainer) {
     // Don't change the following line
     chartContainer.insertAdjacentHTML("beforeend", barGroup.outerHTML);
 
-    init();
+    // init();
   });
 }
 
@@ -281,9 +305,9 @@ function generateReport() {
 
   const balance = totalIncome - totalExpense;
 
-  reportText += `Total Income: Rs ${totalIncome.toFixed(2)}\n`;
-  reportText += `Total Expense: Rs ${Math.abs(totalExpense).toFixed(2)}\n`;
-  reportText += `Balance: Rs ${balance.toFixed(2)}\n\n`;
+  reportText += `Total Income: Rs ${formatMoney(totalIncome)}\n`;
+  reportText += `Total Expense: Rs ${formatMoney(Math.abs(totalExpense))}\n`;
+  reportText += `Balance: Rs ${formatMoney(balance)}\n\n`;
 
   // Category breakdown
   reportText += "Expense Breakdown by Category:\n";
@@ -297,7 +321,7 @@ function generateReport() {
   });
 
   for (const category in categorySummary) {
-    reportText += `${category}: Rs ${categorySummary[category].toFixed(2)}\n`;
+    reportText += `${category}: Rs ${formatMoney(categorySummary[category])}\n`;
   }
 
   alert(reportText);
@@ -403,7 +427,7 @@ function deleteCategory(categoryName) {
 
     // Update transactions with this category to "Other" or first available category
     const defaultCategory = "Other";
-    const transactions = getTransactionsFromStorage();
+    transactions = getTransactionsFromStorage();
 
     transactions.forEach((transaction) => {
       if (transaction.category === categoryName) {
@@ -435,7 +459,7 @@ function updateCategoryDropdowns(categoryDropdowns) {
     categories.forEach((category) => {
       dropdown.insertAdjacentHTML(
         "beforeend",
-        `<option value="${category.toLowerCase()}">${category}</option>`
+        `<option value="${category}">${category}</option>`
       );
     });
 
