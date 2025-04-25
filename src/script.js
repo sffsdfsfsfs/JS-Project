@@ -1,3 +1,5 @@
+const LOCAL_STORAGE_KEY_TRANSACTIONS = "transactions";
+
 // Initialize app
 function init() {
   // DOM elements
@@ -36,7 +38,7 @@ function init() {
 }
 
 function getTransactionsFromStorage() {
-  let transactions = localStorage.getItem("transaction");
+  let transactions = localStorage.getItem(LOCAL_STORAGE_KEY_TRANSACTIONS);
   return transactions ? JSON.parse(transactions) : [];
 }
 
@@ -80,7 +82,7 @@ function generateID() {
 
 // Update local storage
 function updateLocalStorage() {
-  localStorage.setItem("transactions", transactions);
+  localStorage.setItem(LOCAL_STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
 }
 
 // Remove transaction
