@@ -140,9 +140,7 @@ function updateValues(balanceEl, incomeEl, expenseEl) {
 
 // Add transactions to DOM
 function addTransactionDOM(transaction, transactionListEl) {
-
   const item = document.createElement("li");
-  console.log(transaction);
 
   const sign = transaction.amount > 0 ? "+" : "-";
   item.className = transaction.amount > 0 ? "income" : "expense";
@@ -188,7 +186,7 @@ function addTransactionDOM(transaction, transactionListEl) {
 function createChart(chartContainer) {
   chartContainer.innerHTML = "";
 
-  if ((transactions.length = 0)) {
+  if ((transactions.length == 0)) {
     chartContainer.textContent = "No data to display";
     return;
   }
@@ -288,7 +286,7 @@ function createChart(chartContainer) {
     // Don't change the following line
     chartContainer.insertAdjacentHTML("beforeend", barGroup.outerHTML);
 
-    init();
+    // init();
   });
 }
 
