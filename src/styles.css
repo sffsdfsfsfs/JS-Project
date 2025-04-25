@@ -704,3 +704,13 @@ select {
   cursor: pointer;
   margin-right: 10px;
 }
+
+@media (min-width: 1080px) {
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 95%;
+    max-width: 1400px;
+  }
+}
