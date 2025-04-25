@@ -429,7 +429,7 @@ function deleteCategory(categoryName) {
 
     // Update transactions with this category to "Other" or first available category
     const defaultCategory = "Other";
-    const transactions = getTransactionsFromStorage();
+    transactions = getTransactionsFromStorage();
 
     transactions.forEach((transaction) => {
       if (transaction.category === categoryName) {
@@ -461,7 +461,7 @@ function updateCategoryDropdowns(categoryDropdowns) {
     categories.forEach((category) => {
       dropdown.insertAdjacentHTML(
         "beforeend",
-        `<option value="${category.toLowerCase()}">${category}</option>`
+        `<option value="${category}">${category}</option>`
       );
     });
 
