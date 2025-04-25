@@ -287,8 +287,8 @@ select {
 
 .tab-content.active {
   display: block;
-  /* Bug #24: overflow-y should be set to auto */
   height: 370px;
+  overflow-y: auto;
 }
 
 /* Transaction List */
