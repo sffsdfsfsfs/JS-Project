@@ -84,6 +84,9 @@ function addTransaction(e, descriptionEl, amountEl, categoryEl, dateEl) {
     category,
     date,
   };
+  
+  descriptionEl.value = "";
+  amountEl.value = "";
 
   transactions.push(newTransaction);
   updateLocalStorage();
