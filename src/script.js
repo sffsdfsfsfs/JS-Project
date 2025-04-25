@@ -58,9 +58,23 @@ let transactions = getTransactionsFromStorage();
 function addTransaction(e, descriptionEl, amountEl, categoryEl, dateEl) {
   e.preventDefault();
 
-  const amount = parseFloat(amountEl.value);
-
   const description = descriptionEl.value;
+  if (!description) {
+    alert("You haven't entered a description");
+    return;
+  }
+  
+  if (!amountEl.value) {
+    alert("You haven't entered an amount")
+    return;
+  }
+  
+  const amount = parseFloat(amountEl.value);
+  if (Number.isNaN(amount)) {
+    alert("The amount you have entered is invalid")
+    return;
+  }
+
   const category = categoryEl.value;
   const date = dateEl.value;
 
