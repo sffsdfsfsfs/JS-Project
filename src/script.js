@@ -140,11 +140,12 @@ function updateValues(balanceEl, incomeEl, expenseEl) {
 
 // Add transactions to DOM
 function addTransactionDOM(transaction, transactionListEl) {
-  const sign = "-";
 
   const item = document.createElement("li");
+  console.log(transaction);
 
-  item.className = transaction.category === "income" ? "expense" : "income";
+  const sign = transaction.amount > 0 ? "+" : "-";
+  item.className = transaction.amount > 0 ? "income" : "expense";
 
   const detailsDiv = document.createElement("div");
   detailsDiv.className = "details";
