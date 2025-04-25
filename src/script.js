@@ -1,5 +1,13 @@
 const LOCAL_STORAGE_KEY_TRANSACTIONS = "transactions";
 
+/**
+ * A utility function to format a money value to two decimal places.
+ * @param {number} value
+ */
+function formatMoney(value) {
+  return value.toFixed(2);
+}
+
 // Initialize app
 function init() {
   // DOM elements
@@ -125,9 +133,9 @@ function updateValues(balanceEl, incomeEl, expenseEl) {
     .filter((amount) => amount < 0)
     .reduce((acc, amount) => acc - amount, 0);
 
-  balanceEl.textContent = `Rs ${total}`;
-  incomeEl.textContent = `+Rs ${income}`;
-  expenseEl.textContent = `-Rs ${Math.abs(expense)}`;
+  balanceEl.textContent = `Rs ${formatMoney(total)}`;
+  incomeEl.textContent = `+Rs ${formatMoney(income)}`;
+  expenseEl.textContent = `-Rs ${formatMoney(Math.abs(expense))}`;
 }
 
 // Add transactions to DOM
@@ -159,9 +167,7 @@ function addTransactionDOM(transaction, transactionListEl) {
 
   const amountSpan = document.createElement("span");
   amountSpan.className = "amount";
-  amountSpan.textContent = `${sign}Rs ${Math.abs(transaction.amount).toFixed(
-    2
-  )}`;
+  amountSpan.textContent = `${sign}Rs ${formatMoney(Math.abs(transaction.amount))}`;
 
   let deleteBtn = document.createElement("button");
   deleteBtn.className = "delete-btn";
@@ -300,9 +306,9 @@ function generateReport() {
 
   const balance = totalIncome - totalExpense;
 
-  reportText += `Total Income: Rs ${totalIncome.toFixed(2)}\n`;
-  reportText += `Total Expense: Rs ${Math.abs(totalExpense).toFixed(2)}\n`;
-  reportText += `Balance: Rs ${balance.toFixed(2)}\n\n`;
+  reportText += `Total Income: Rs ${formatMoney(totalIncome)}\n`;
+  reportText += `Total Expense: Rs ${formatMoney(Math.abs(totalExpense))}\n`;
+  reportText += `Balance: Rs ${formatMoney(balance)}\n\n`;
 
   // Category breakdown
   reportText += "Expense Breakdown by Category:\n";
@@ -316,7 +322,7 @@ function generateReport() {
   });
 
   for (const category in categorySummary) {
-    reportText += `${category}: Rs ${categorySummary[category].toFixed(2)}\n`;
+    reportText += `${category}: Rs ${formatMoney(categorySummary[category])}\n`;
   }
 
   alert(reportText);
